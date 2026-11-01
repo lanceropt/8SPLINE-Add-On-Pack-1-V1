@@ -1,5 +1,5 @@
 // =====================================================================
-// 8SPINE POWER TOOLS v1.0.0  (tweak module - not a music source)
+// 8SPINE POWER TOOLS v1.0.1  (tweak module - not a music source)
 // ---------------------------------------------------------------------
 // What it does (applied automatically when you OPEN this module):
 //   1. NORMALIZATION - finds the app's audio-normalization flags and
@@ -27,13 +27,13 @@
 //   - Map.prototype.get spy to mirror the RN module registry
 //   - __r(i) numeric scan (Metro runtime) with miss/time caps
 //   - SettingsPage default-export proxy hook
-// Code runs via new Function(code)() inside the app sandbox.
+// Code is evaluated by the app's module sandbox.
 
 var g = null;
 try { g = globalThis; } catch (e0) {}
-if (!g) { try { g = Function("return this")(); } catch (e0b) {} }
+if (!g) { try { g = this; } catch (e0b) {} }
 
-var VERSION = "1.0.0";
+var VERSION = "1.0.1";
 var PT_KEY = "pt_toggles_v1";
 
 var STATE = null;
@@ -721,16 +721,9 @@ function PT_applyVol() {
 // ---------------------------------------------------------------------
 
 function PT_makeErrorBoundary(React) {
-  try {
-    var F = new Function("React",
-      "return class PTEB extends React.Component {" +
-      "  constructor(p){ super(p); this.state = { err: false }; }" +
-      "  static getDerivedStateFromError(){ return { err: true }; }" +
-      "  componentDidCatch(){ }" +
-      "  render(){ return this.state.err ? null : this.props.children; }" +
-      "};");
-    return F(React);
-  } catch (e) { return null; }
+  // Dynamic code constructors are forbidden by the 8SPINE module sandbox.
+  // Returning null selects the defensive View wrapper in the caller.
+  return null;
 }
 
 function PT_buildSettingsSection(React, RN) {
