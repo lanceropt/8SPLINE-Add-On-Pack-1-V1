@@ -4,8 +4,6 @@
 
 var PT_STATE = {
   norm: true,
-  badges: true,
-  volume: true,
   settingsHooked: false,
   last: "waiting for loader"
 };
@@ -97,8 +95,6 @@ function PT_findSettings(s) {
 function PT_status(s) {
   var parts = [];
   parts.push("normalization " + (PT_STATE.norm ? "on" : "off"));
-  parts.push("badges " + (PT_STATE.badges ? "on" : "off"));
-  parts.push("volume " + (PT_STATE.volume ? "on" : "off"));
   if (PT_STATE.last) parts.push(PT_STATE.last);
   return parts.join(" · ");
 }
@@ -164,7 +160,7 @@ return {
   id: "power-tools-companion",
   name: "Power Tools Companion",
   author: "local",
-  version: "2.0.0",
+  version: "2.0.1",
   description: "Legitimate normalization control and Settings integration through the Parasy8 loader.",
   labels: ["UTILITY", "AUDIO", "SETTINGS"],
   automaticStreaming: false,
