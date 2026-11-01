@@ -1,5 +1,5 @@
 // =====================================================================
-// 8SPINE POWER TOOLS v1.0.3  (tweak module - not a music source)
+// 8SPINE POWER TOOLS v1.0.4  (tweak module - not a music source)
 // ---------------------------------------------------------------------
 // What it does (applied automatically when you OPEN this module):
 //   1. NORMALIZATION - finds the app's audio-normalization flags and
@@ -31,7 +31,7 @@
 
 var g = this;
 
-var VERSION = "1.0.3";
+var VERSION = "1.0.4";
 var PT_KEY = "pt_toggles_v1";
 
 var STATE = null;
@@ -298,7 +298,7 @@ function PT_classifyRecord(id, ex) {
     }
     // module instances (any source module: searchTracks + getTrackStreamUrl)
     if (typeof o.searchTracks === "function") {
-      STATE.modules.push({ id: id, obj: o, self: o.id === "power-tools" });
+      STATE.modules.push({ id: id, obj: o, isOwnModule: o.id === "power-tools" });
       PT_rec("module", id, pfx + "instance id=" + (o.id || "?"));
     }
     // Module Manager
@@ -553,7 +553,7 @@ function PT_applyBadges() {
   var n = 0;
   for (var i = 0; i < STATE.modules.length; i++) {
     var m = STATE.modules[i];
-    if (m.self) continue;
+    if (m.isOwnModule) continue;
     try { PT_wrapInstance(m.obj); n++; } catch (e) {}
   }
   for (var j = 0; j < STATE.badgeFns.length; j++) {
