@@ -6,15 +6,14 @@
       "pkg": "com.8spine.module.power.tools",
       "file": "power-tools.js",
       "download": "https://cdn.jsdelivr.net/gh/lanceropt/8SPLINE-Add-On-Pack-1-V1@41d23e9c8257530d96e1806a68013ad309e90ab6/power-tools.js",
-      "version": "v1.0.4",
+      "version": "v1.0.5",
       "type": "MODULE",
       "author": "local",
-      "description": "NORMALIZATION, AD-FREE MODE (BRING YOUR OWN PREMIUM), OS VOLUME SYNC, LOSSLESS / DOLBY ATMOS BADGE CLEANUP. OPEN THE MODULE, THEN TYPE: HELP",
+      "description": "AUDIO NORMALIZATION, LOSSLESS / DOLBY ATMOS BADGE PRESENTATION, COMPATIBLE VOLUME CONTROLS, AND SETTINGS UI.",
       "tags": [
         "TWEAK",
         "UTILITY",
         "AUDIO",
-        "AD-FREE",
         "LOSSLESS",
         "DOLBY ATMOS"
       ],

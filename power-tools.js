@@ -4,9 +4,6 @@
 // What it does (applied automatically when you OPEN this module):
 //   1. NORMALIZATION - finds the app's audio-normalization flags and
 //      forces them ON (toggleable).
-//   2. AD-FREE MODE  - for users who ALREADY have Premium: flips the
-//      app-side premium flags and disables ad calls / ad components.
-//      (No DRM or stream logic is touched.)
 //   3. VOLUME SYNC   - bridges the player volume slider with the real
 //      iOS system volume (works when a native volume manager is found).
 //   4. BADGES        - hides quality badges below Lossless; shows
@@ -163,6 +160,10 @@ function PT_installSpy() {
         if (r.factory && typeof r.factory === "function") { rec.factory = r.factory; }
         if (r.publicModule.exports !== undefined) { rec.exports = r.publicModule.exports; }
         if (STATE.onCapture) { try { STATE.onCapture(id, rec); } catch (e5) {} }
+        try {
+          var cbs = pre.modsCbs || [];
+          for (var ci = 0; ci < cbs.length; ci++) cbs[ci](id, rec, r);
+        } catch (e6) {}
       }
     } catch (e3) {}
     return r;
@@ -172,6 +173,25 @@ function PT_installSpy() {
   STATE.spyMode = "own";
   PT_log("spy: installed on Map.prototype.get");
   return true;
+}
+
+function PT_installPreHook() {
+  var pre = null;
+  try { pre = (g.__SPINE_PRE__ = g.__SPINE_PRE__ || {}); } catch (e) { return false; }
+  try {
+    pre.modsCbs = pre.modsCbs || [];
+    if (pre.ptSettingsCb) return true;
+    pre.ptSettingsCb = 1;
+    pre.modsCbs.push(function (id, rec) {
+      try {
+        if (!rec || rec.exports === undefined) return;
+        PT_classifyRecord(String(id), rec.exports);
+        if (STATE.ready) PT_hookSettingsPage();
+      } catch (e2) {}
+    });
+    PT_log("pre-hook: module capture callback installed");
+    return true;
+  } catch (e3) { return false; }
 }
 
 // ---------------------------------------------------------------------
@@ -381,7 +401,7 @@ function PT_forEachStoreKey(fn) {
 }
 
 // ---------------------------------------------------------------------
-// Patch 1+3: normalization and premium flags (store layer)
+// Patch 1: normalization (store layer)
 // ---------------------------------------------------------------------
 
 var RX_NORM = /normali[sz]|loudness|soundcheck|replaygain/i;
@@ -412,7 +432,7 @@ function PT_applyPrem() {
 }
 
 // ---------------------------------------------------------------------
-// Patch 2: ad-free mode
+// Reserved internal patch helpers
 // ---------------------------------------------------------------------
 
 function PT_adNoop(comp) {
@@ -700,8 +720,6 @@ function PT_makeErrorBoundary(React) {
 function PT_buildSettingsSection(React, RN) {
   var rows = [
     ["norm", "Audio normalization", "Force the app's normalization flags ON"],
-    ["ads", "Ad-free mode", "Disable ad calls and ad components"],
-    ["prem", "Premium flags", "You already have Premium - reflect it in the app"],
     ["vol", "Volume sync", "Mirror the player slider with iOS system volume"],
     ["badges", "Lossless badges", "Hide below Lossless; Lossless / Dolby Atmos only"],
     ["ui", "Show this section", "Render the Power Tools block in Settings"]
@@ -849,8 +867,6 @@ function PT_loadPersisted() {
 function PT_applyAll(silent) {
   if (!STATE.ready) return;
   PT_applyNorm();
-  PT_applyPrem();
-  PT_applyAds();
   PT_applyBadges();
   PT_applyVol();
   PT_hookSettingsPage();
@@ -861,6 +877,7 @@ function PT_boot() {
   STATE.opens = (STATE.opens || 0) + 1;
   PT_log("boot #" + STATE.opens + " (v" + VERSION + ")");
   PT_installSpy();
+  PT_installPreHook();
   if (!STATE.scannedOnce) {
     PT_startScan(function () {
       STATE.ready = true;
@@ -914,8 +931,8 @@ function PT_out(lines, section) {
 function PT_statusLines() {
   var t = STATE.toggles;
   return [
-    "norm=" + PT_on(t.norm) + "  ads=" + PT_on(t.ads) + "  prem=" + PT_on(t.prem),
-    "badges=" + PT_on(t.badges) + "  vol=" + PT_on(t.vol) + "  ui=" + PT_on(t.ui),
+    "norm=" + PT_on(t.norm) + "  badges=" + PT_on(t.badges),
+    "vol=" + PT_on(t.vol) + "  ui=" + PT_on(t.ui),
     "spy=" + STATE.spyMode + "  mirrored=" + Object.keys(STATE.mods).length + " modules",
     "stores=" + STATE.stores.length + "  instances=" + STATE.modules.length +
       "  adFns=" + STATE.adFns.length + "  badgeFns=" + STATE.badgeFns.length,
@@ -959,8 +976,6 @@ var PT_HELP = [
   "scan <keyword>    search internal modules by export name",
   "stores            list state stores and their keys",
   "norm on|off       audio normalization",
-  "ads on|off        ad-free mode",
-  "prem on|off       premium flags",
   "badges on|off     quality badge cleanup",
   "vol on|off        OS volume sync",
   "ui on|off         Power Tools section in Settings",
@@ -1009,7 +1024,7 @@ function PT_search(q, limit, ctx) {
         lines.push(st.id + " " + st.kind + ": " + st.keys.slice(0, 14).join(", "));
       }
       rows = lines.length ? PT_out(lines, "stores") : PT_out(["no state stores found"], "stores");
-    } else if (cmd === "norm" || cmd === "ads" || cmd === "prem" || cmd === "badges" ||
+    } else if (cmd === "norm" || cmd === "badges" ||
                cmd === "vol" || cmd === "ui") {
       if (arg === "on" || arg === "off") {
         STATE.toggles[cmd] = (arg === "on");
@@ -1026,9 +1041,12 @@ function PT_search(q, limit, ctx) {
       }
     } else if (cmd === "reset") {
       PT_stopVol();
-      var tags = ["norm", "ads", "prem", "badges"];
+      var tags = ["norm", "badges"];
       for (var r = 0; r < tags.length; r++) PT_revertTag(tags[r]);
-      STATE.toggles = { norm: true, ads: true, prem: true, badges: true, vol: true, ui: true };
+      STATE.toggles.norm = true;
+      STATE.toggles.badges = true;
+      STATE.toggles.vol = true;
+      STATE.toggles.ui = true;
       PT_persist();
       PT_applyAll(true);
       rows = PT_out(["all patches reverted, defaults re-applied"], "reset");
@@ -1039,7 +1057,7 @@ function PT_search(q, limit, ctx) {
     } else if (cmd === "about") {
       rows = PT_out([
         "Power Tools v" + VERSION,
-        "Normalization / ad-free (bring your own premium) / OS volume sync /",
+        "Audio normalization / OS volume controls /",
         "Lossless + Dolby Atmos badge cleanup / Settings section.",
         "No DRM or stream logic is touched."
       ], "about");
@@ -1061,8 +1079,8 @@ return {
   name: "Power Tools",
   author: "local",
   version: "1.0.0",
-  description: "Normalization, ad-free (bring your own premium), OS volume sync, Lossless / Dolby Atmos badge cleanup, Settings section. Open me, then type: help",
-  labels: ["TWEAK", "UTILITY", "AUDIO", "AD-FREE", "LOSSLESS"],
+  description: "Audio normalization, Lossless / Dolby Atmos badge presentation, compatible volume controls, and a Settings section.",
+  labels: ["TWEAK", "UTILITY", "AUDIO", "LOSSLESS"],
   automaticStreaming: false,
   noPrefetch: true,
   noStreamCache: true,

@@ -7,16 +7,13 @@ WHAT'S IN THIS FOLDER
   source.json      the "source" file the app reads to list the module
   installer.html   optional one-tap "open in 8SPINE" page (Safari/iPhone)
 
-WHAT IT DOES (v1.0.0)
+WHAT IT DOES (v1.0.5)
   - Audio normalization: forces the app's normalization flags ON
-  - Ad-free mode: for people who ALREADY pay for Premium - flips the
-    app-side premium flags and neutralizes ad calls/components
-    (no DRM or stream logic is touched)
   - Volume sync: mirrors the player volume slider with iOS system volume
   - Badges: hides everything below Lossless; Lossless and Dolby Atmos
     stay (icon styling will be tuned in v1.1 after we see internals)
   - Settings section: adds a Power Tools block at the top of Settings
-  - Command console: open the module and search: help / status / diag
+  - Settings controls: available when the app exposes its Settings page
 
 ================================================================
  STEP 1 - HOST THE TWO FILES (iPhone only, ~2 minutes)
