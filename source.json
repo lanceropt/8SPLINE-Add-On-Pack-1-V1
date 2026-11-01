@@ -1,21 +1,19 @@
 {
   "category:tools": [
     {
-      "id": "power-tools",
-      "name": "Power Tools",
-      "pkg": "com.8spine.module.power.tools",
-      "file": "power-tools.js",
-      "download": "https://cdn.jsdelivr.net/gh/lanceropt/8SPLINE-Add-On-Pack-1-V1@bea2029537b3c4ceb9dc71d9716739b4ee53dd4d/power-tools.js",
-      "version": "v1.0.5",
+      "id": "power-tools-companion",
+      "name": "Power Tools Companion",
+      "pkg": "com.8spine.module.power.tools.companion",
+      "file": "power-tools-companion.js",
+      "download": "PLACEHOLDER",
+      "version": "v2.0.0",
       "type": "MODULE",
       "author": "local",
-      "description": "AUDIO NORMALIZATION, LOSSLESS / DOLBY ATMOS BADGE PRESENTATION, COMPATIBLE VOLUME CONTROLS, AND SETTINGS UI.",
+      "description": "LEGITIMATE NORMALIZATION CONTROL AND SETTINGS INTEGRATION THROUGH THE PARASY8 LOADER.",
       "tags": [
-        "TWEAK",
         "UTILITY",
         "AUDIO",
-        "LOSSLESS",
-        "DOLBY ATMOS"
+        "SETTINGS"
       ],
       "featured": false,
       "trusted": false,
