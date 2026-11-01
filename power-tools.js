@@ -1,5 +1,5 @@
 // =====================================================================
-// 8SPINE POWER TOOLS v1.0.1  (tweak module - not a music source)
+// 8SPINE POWER TOOLS v1.0.2  (tweak module - not a music source)
 // ---------------------------------------------------------------------
 // What it does (applied automatically when you OPEN this module):
 //   1. NORMALIZATION - finds the app's audio-normalization flags and
@@ -25,7 +25,7 @@
 // =====================================================================
 // Tested patterns adapted from working 8SPINE modules:
 //   - Map.prototype.get spy to mirror the RN module registry
-//   - __r(i) numeric scan (Metro runtime) with miss/time caps
+//   - registry capture through the app's permitted pre-hook interface
 //   - SettingsPage default-export proxy hook
 // Code is evaluated by the app's module sandbox.
 
@@ -33,7 +33,7 @@ var g = null;
 try { g = globalThis; } catch (e0) {}
 if (!g) { try { g = this; } catch (e0b) {} }
 
-var VERSION = "1.0.1";
+var VERSION = "1.0.2";
 var PT_KEY = "pt_toggles_v1";
 
 var STATE = null;
@@ -177,44 +177,17 @@ function PT_installSpy() {
 }
 
 // ---------------------------------------------------------------------
-// Numeric __r scan (Metro), chunked so the UI stays responsive
+// Registry classification pass
 // ---------------------------------------------------------------------
 
 function PT_startScan(done) {
   if (STATE.scannedOnce || STATE.scanning) { if (done) done(false); return; }
-  if (!g || typeof g.__r !== "function") { PT_log("scan: no __r runtime"); if (done) done(false); return; }
-  STATE.scanning = true;
   STATE.scannedOnce = true;
-  var i = 0, MAX = 65535, STEP = 1500;
-  var misses = 0, MISS_LIMIT = 400;
-  var t0 = Date.now(), TIME_CAP = 8000;
-  function step() {
-    var end = Math.min(i + STEP, MAX + 1);
-    for (; i < end; i++) {
-      if (misses >= MISS_LIMIT || Date.now() - t0 > TIME_CAP) break;
-      var ex = null;
-      try { ex = g.__r(i); } catch (e) { misses++; continue; }
-      misses = 0;
-      if (ex && (typeof ex === "object" || typeof ex === "function")) {
-        var id = String(i);
-        var rec = STATE.mods[id];
-        if (!rec) { rec = STATE.mods[id] = {}; }
-        rec.id = id;
-        rec.initialized = true;
-        rec.exports = ex;
-      }
-    }
-    if (i <= MAX && misses < MISS_LIMIT && Date.now() - t0 <= TIME_CAP) {
-      setTimeout(step, 0);
-    } else {
-      STATE.scanning = false;
-      STATE.scanned = i;
-      PT_log("scan: done at id " + i + " (" + Object.keys(STATE.mods).length + " modules mirrored)");
-      PT_classifyAll();
-      if (done) done(true);
-    }
-  }
-  step();
+  STATE.scanning = false;
+  STATE.scanned = Object.keys(STATE.mods).length;
+  PT_log("scan: registry capture pass (" + STATE.scanned + " modules mirrored)");
+  PT_classifyAll();
+  if (done) done(true);
 }
 
 // ---------------------------------------------------------------------
