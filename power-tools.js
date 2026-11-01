@@ -1,5 +1,5 @@
 // =====================================================================
-// 8SPINE POWER TOOLS v1.0.2  (tweak module - not a music source)
+// 8SPINE POWER TOOLS v1.0.3  (tweak module - not a music source)
 // ---------------------------------------------------------------------
 // What it does (applied automatically when you OPEN this module):
 //   1. NORMALIZATION - finds the app's audio-normalization flags and
@@ -29,11 +29,9 @@
 //   - SettingsPage default-export proxy hook
 // Code is evaluated by the app's module sandbox.
 
-var g = null;
-try { g = globalThis; } catch (e0) {}
-if (!g) { try { g = this; } catch (e0b) {} }
+var g = this;
 
-var VERSION = "1.0.2";
+var VERSION = "1.0.3";
 var PT_KEY = "pt_toggles_v1";
 
 var STATE = null;
