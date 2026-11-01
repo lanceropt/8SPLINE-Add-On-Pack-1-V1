@@ -5,7 +5,7 @@
       "name": "Power Tools",
       "pkg": "com.8spine.module.power.tools",
       "file": "power-tools.js",
-      "download": "https://cdn.jsdelivr.net/gh/lanceropt/8SPLINE-Add-On-Pack-1-V1@v1.0.3/power-tools.js",
+      "download": "https://cdn.jsdelivr.net/gh/lanceropt/8SPLINE-Add-On-Pack-1-V1@4fc8417e8d984de859778f36049f7ee630e81186/power-tools.js",
       "version": "v1.0.3",
       "type": "MODULE",
       "author": "local",
