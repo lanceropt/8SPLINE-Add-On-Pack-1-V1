@@ -5,7 +5,7 @@
       "name": "Parasy8 + Power Tools",
       "pkg": "com.8spine.module.parasy8.powertools",
       "file": "parasy8-power-tools-loader.js",
-      "download": "PLACEHOLDER",
+      "download": "https://cdn.jsdelivr.net/gh/lanceropt/8SPLINE-Add-On-Pack-1-V1@e672cc5dcca50c63e96bdfa9d7bfd5bdbc7a8fcd/parasy8-power-tools-loader.js",
       "version": "v3.0.0",
       "type": "MODULE",
       "author": "local",
